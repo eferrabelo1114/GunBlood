@@ -1,0 +1,24 @@
+# Project place files
+/*.rbxl
+/*.rbxlx
+/*.rbxl.lock
+/*.rbxlx.lock
+/SkoobiFramework.rbxlx
+
+# Wally packages (reinstall with `wally install`)
+/Packages
+/ServerPackages
+/DevPackages
+
+# Tooling / build artifacts
+sourcemap.json
+globalTypes.d.luau
+*.rbxm
+*.rbxmx
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

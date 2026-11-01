@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: CompeyDev/setup-rokit@v0.2.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install packages
+        run: wally install
+
+      - name: Format
+        run: stylua --check src
+
+      - name: Lint
+        run: selene src
+
+      - name: Type check
+        run: |
+          rojo sourcemap default.project.json --output sourcemap.json
+          curl -sSfL -o globalTypes.d.luau https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.luau
+          luau-lsp analyze \
+            --definitions=globalTypes.d.luau \
+            --base-luaurc=.luaurc \
+            --sourcemap=sourcemap.json \
+            --ignore="Packages/**" \
+            --ignore="**/ProfileStore.luau" \
+            src
