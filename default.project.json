@@ -1,5 +1,5 @@
 {
-  "name": "SkoobiFramework",
+  "name": "WesternDuel",
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
@@ -17,6 +17,9 @@
       }
     },
     "StarterPlayer": {
+      "$properties": {
+        "EnableMouseLockOption": false
+      },
       "StarterPlayerScripts": {
         "Client": {
           "$path": "src/client"

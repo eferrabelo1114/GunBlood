@@ -1,4 +1,4 @@
-# SkoobiFramework
+# WesternDuel
 This is the beginning of a long prosperous journey I'll be taking on the platform Roblox.com
 
 There will be mountains.

@@ -1,6 +1,6 @@
 --!strict
 --[[
-	Shared type definitions for SkoobiFramework services and controllers.
+	Shared type definitions for WesternDuel services and controllers.
 ]]
 
 local ProfileTemplate = require(script.Parent.Data.ProfileTemplate)

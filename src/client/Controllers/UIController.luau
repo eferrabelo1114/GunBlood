@@ -15,11 +15,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Fusion = require(ReplicatedStorage.Shared.Packages.fusion)
 local App = require(script.Parent.Parent.UI.App)
 local DataController = require(script.Parent.DataController)
+local DuelStateController = require(script.Parent.DuelStateController)
 local NotificationController = require(script.Parent.NotificationController)
 
 local UIController = {
 	Priority = 60,
-	Dependencies = { "DataController", "NotificationController" },
+	Dependencies = { "DataController", "DuelStateController", "NotificationController" },
 }
 
 local scope = Fusion.scoped(Fusion)
@@ -34,6 +35,18 @@ function UIController:OnStart()
 		Parent = Players.LocalPlayer:WaitForChild("PlayerGui"),
 		Cash = DataController:Select("Cash"),
 		Announcements = NotificationController.Announcements,
+		Duel = {
+			Phase = DuelStateController.Phase,
+			Banner = DuelStateController.Banner,
+			Ammo = DuelStateController.Ammo,
+			Reloading = DuelStateController.Reloading,
+			Disarmed = DuelStateController.Disarmed,
+			Holstered = DuelStateController.Holstered,
+			Round = DuelStateController.Round,
+			MyScore = DuelStateController.MyScore,
+			OpponentScore = DuelStateController.OpponentScore,
+			OpponentName = DuelStateController.OpponentName,
+		},
 	})
 	print("[Skoobi/Client] UI mounted")
 end

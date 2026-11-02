@@ -1,6 +1,6 @@
 --!strict
 --[[
-	Shared configuration values for SkoobiFramework. Replicated to clients: never put
+	Shared configuration values for WesternDuel. Replicated to clients: never put
 	secrets or server-only settings here (use ServerScriptService.Server.ServerConfig).
 ]]
 

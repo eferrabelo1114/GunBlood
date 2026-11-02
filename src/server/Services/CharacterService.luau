@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Promise = require(ReplicatedStorage.Shared.Packages.promise)
 local GameEvents = require(ReplicatedStorage.Shared.Modules.GameEvents)
 local Constants = require(ReplicatedStorage.Shared.Constants)
+local DuelConfig = require(ReplicatedStorage.Shared.Config.DuelConfig)
 
 local CharacterService = {
 	Priority = 30,
@@ -26,6 +27,55 @@ local function clearPlayer(player: Player)
 	loadAttempts[player] = nil
 end
 
+local function isInDuel(player: Player): boolean
+	return player:GetAttribute(DuelConfig.IN_DUEL_ATTRIBUTE) == true
+end
+
+local function watchDeath(player: Player, character: Model)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if not humanoid then
+		return
+	end
+
+	disconnectDied(player)
+	diedConnections[player] = humanoid.Died:Connect(function()
+		-- MatchmakerService owns respawns while a duel is running.
+		if isInDuel(player) then
+			return
+		end
+		task.wait(Constants.RESPAWN_DELAY)
+		if player.Parent == Players and not isInDuel(player) and player.Character == character then
+			GameEvents.PlayerReadyToSpawn:Fire(player)
+		end
+	end)
+end
+
+--[[
+	Loads a fresh character at the lobby SpawnLocation. Resolves with the character, rejects if
+	LoadCharacterAsync fails. Does not retry; callers decide how to handle failure.
+]]
+function CharacterService:SpawnAsync(player: Player)
+	return Promise.new(function(resolve, reject)
+		local ok, err = pcall(function()
+			player:LoadCharacterAsync()
+		end)
+		if not ok then
+			reject(err)
+			return
+		end
+
+		local character = player.Character
+		if character == nil then
+			reject("Character missing after LoadCharacterAsync")
+			return
+		end
+
+		print(`[Skoobi/Server] Character spawned for {player.Name}`)
+		watchDeath(player, character)
+		resolve(character)
+	end)
+end
+
 local function spawnCharacter(player: Player)
 	local attempts = loadAttempts[player] or 0
 	if attempts >= Constants.CHARACTER_LOAD_MAX_RETRIES then
@@ -37,37 +87,9 @@ local function spawnCharacter(player: Player)
 
 	loadAttempts[player] = attempts + 1
 
-	Promise.new(function(resolve, reject)
-		local ok, err = pcall(function()
-			player:LoadCharacterAsync()
-		end)
-		if ok then
-			resolve()
-		else
-			reject(err)
-		end
-	end)
+	CharacterService:SpawnAsync(player)
 		:andThen(function()
 			loadAttempts[player] = 0
-			print(`[Skoobi/Server] Character spawned for {player.Name}`)
-
-			local character = player.Character
-			if not character then
-				return
-			end
-
-			local humanoid = character:FindFirstChildOfClass("Humanoid")
-			if not humanoid then
-				return
-			end
-
-			disconnectDied(player)
-			diedConnections[player] = humanoid.Died:Connect(function()
-				task.wait(Constants.RESPAWN_DELAY)
-				if player.Parent == Players then
-					GameEvents.PlayerReadyToSpawn:Fire(player)
-				end
-			end)
 		end)
 		:catch(function(err)
 			warn(`[CharacterService] Failed to load character for {player.Name}: {err}`)

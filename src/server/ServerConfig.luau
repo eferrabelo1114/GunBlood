@@ -35,6 +35,25 @@ local ServerConfig = {
 
 	-- NetGuard kicks a player after this many rejected packets in one session.
 	NETGUARD_KICK_THRESHOLD = 100,
+
+	-- Practice bot: duels a player who has waited alone in the queue for BOT_FILL_DELAY seconds.
+	BOTS_ENABLED = true,
+	BOT_FILL_DELAY = 6,
+	BOT_NAME = "Bandit",
+	-- Target-practice mode: the bot holsters properly but then just stands there, never moving
+	-- or shooting. Rounds end when you kill it or on ROUND_TIMEOUT.
+	BOT_PASSIVE = true,
+	-- Seconds between "DRAW!" and the bot's first shot.
+	BOT_REACTION_TIME = NumberRange.new(0.45, 0.8),
+	BOT_FIRE_INTERVAL = NumberRange.new(0.55, 0.9),
+	BOT_HEADSHOT_CHANCE = 0.25,
+	-- Max random aim error per axis, in radians.
+	BOT_AIM_SPREAD = math.rad(2),
+	BOT_FALSE_START_CHANCE = 0.1,
+	-- After the draw the bot picks a new strafe (left / right / stand) this often.
+	BOT_STRAFE_INTERVAL = NumberRange.new(0.6, 1.2),
+	-- Chance to jump each time it picks a new strafe.
+	BOT_JUMP_CHANCE = 0.2,
 }
 
 return ServerConfig
